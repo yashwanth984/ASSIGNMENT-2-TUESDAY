@@ -1,0 +1,142 @@
+// Q1: Find products where the color does not include "gold" and retrieve their name, screen size, and color.
+db.products.find({
+    color: { $not: { $in: ["gold"] } }
+}, {
+    name: 1,
+    "spec.screen": 1,
+    color: 1
+})
+
+// Q2: Find products where the screen size is greater than 7 or the color is white. Retrieve their name.
+db.products.find({
+    $or: [
+        { "spec.screen": { $gt: 7 } },
+        { color: "white" }
+    ]
+}, {
+    name: 1
+})
+
+// Q3: Find products where the price is 699 or the storage is 1024. Retrieve their name, price, and storage.
+db.products.find({
+    $or: [
+        { price: 699 },
+        { storage: 1024 }
+    ]
+}, {
+    name: 1,
+    price: 1,
+    storage: 1
+})
+
+// Q4: Find products where the CPU speed is not less than 3 and the release date is not September 1, 2011. Retrieve their name, CPU speed, and release date.
+db.products.find({
+    $and: [
+        { "spec.cpu": { $gte: 3 } },
+        { releaseDate: { $ne: ISODate("2011-09-01") } }
+    ]
+}, {
+    name: 1,
+    "spec.cpu": 1,
+    releaseDate: 1
+})
+
+// Q5: Find products where the RAM is neither 4 nor the price is less than 799. Retrieve their name and release date.
+db.products.find({
+    $nor: [
+        { "spec.ram": 4 },
+        { price: { $lt: 799 } }
+    ]
+}, {
+    name: 1,
+    releaseDate: 1
+})
+
+// Q6: Find products where the price is either greater than 799 or the RAM is greater than 12. Retrieve their name, price, and RAM.
+db.products.find({
+    $or: [
+        { price: { $gt: 799 } },
+        { "spec.ram": { $gt: 12 } }
+    ]
+}, {
+    name: 1,
+    price: 1,
+    "spec.ram": 1
+})
+
+// Q7: Find products where the color does not include "white" and the price is below 800. Retrieve their name, price, and storage.
+db.products.find({
+    $and: [
+        { color: { $nin: ["white"] } },
+        { price: { $lt: 800 } }
+    ]
+}, {
+    name: 1,
+    price: 1,
+    storage: 1
+})
+
+// Q8: Find products that have "white" as a color and a CPU speed greater than the average CPU speed of all products. Retrieve their name, price, and CPU speed.
+// First, calculate the average CPU speed
+db.products.aggregate([
+    {
+        $group: {
+            _id: null,
+            avgCpu: { $avg: "$spec.cpu" }
+        }
+    }
+])
+
+// Replace `avgCpuValue` with the actual average CPU speed value obtained from the aggregation query
+db.products.find({
+    color: "white",
+    "spec.cpu": { $gt: avgCpuValue }
+}, {
+    name: 1,
+    price: 1,
+    "spec.cpu": 1
+})
+
+// Q9: Find products with either blue color or storage not less than 128. Retrieve their name, color, and storage.
+db.products.find({
+    $or: [
+        { color: "blue" },
+        { storage: { $gte: 128 } }
+    ]
+}, {
+    name: 1,
+    color: 1,
+    storage: 1
+})
+
+// Q10: Find products where the CPU speed is not less than 3 and the release date is not September 1, 2011. Retrieve their name, CPU speed, and release date.
+db.products.find({
+    $and: [
+        { "spec.cpu": { $gte: 3 } },
+        { releaseDate: { $ne: ISODate("2011-09-01") } }
+    ]
+}, {
+    name: 1,
+    "spec.cpu": 1,
+    releaseDate: 1
+})
+
+// Q11: Find products released after January 1, 2018, with a screen size greater than or equal to 9.5 inches. Retrieve their name, release date, and screen size.
+db.products.find({
+    releaseDate: { $gt: ISODate("2018-01-01") },
+    "spec.screen": { $gte: 9.5 }
+}, {
+    name: 1,
+    releaseDate: 1,
+    "spec.screen": 1
+})
+
+// Q12: Find products with a price between 600 and 900 dollars, and whose storage includes 256GB. Retrieve their name, price, and storage.
+db.products.find({
+    price: { $gte: 600, $lte: 900 },
+    storage: { $in: [256] }
+}, {
+    name: 1,
+    price: 1,
+    storage: 1
+})
